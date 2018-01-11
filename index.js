@@ -6,7 +6,6 @@ var countLines = require('count-lines')
 var convertSourceMap = require('convert-source-map')
 var combineSourceMap = require('combine-source-map')
 var through = require('through2')
-var umd = require('umd')
 var dedent = require('dedent')
 var json = require('JSONStream')
 var combiner = require('stream-combiner')
@@ -455,8 +454,8 @@ function flatten (rows, opts, stream) {
   }
 
   if (opts.standalone) {
-    intro += umd.prelude(opts.standalone)
-    outro += umd.postlude(opts.standalone)
+    intro += '!function (fn) { module.exports = fn() }(function () {'
+    outro += '});'
   } else if (exposesModules) {
     intro += dedent`
       require = (function (require) {
