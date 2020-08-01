@@ -453,9 +453,16 @@ function flatten (rows, opts, stream) {
     }
   }
 
-  if (opts.standalone) {
-    intro += '!function (fn) { module.exports = fn() }(function () {'
+  if (opts.standalone && opts.universal) {
+    intro += '!function(e){"module" in this?module.exports=e():{global}=e()}(function(){'
+      .replace('{global}', opts.standalone)
     outro += '});'
+  } else if (typeof opts.standalone === 'string') {
+    intro += opts.standalone + '=(function(){'
+    outro += '})();'
+  } else if (opts.standalone) {
+    intro += 'module.exports=(function(){'
+    outro += '})();'
   } else if (exposesModules) {
     intro += dedent`
       require = (function (require) {
